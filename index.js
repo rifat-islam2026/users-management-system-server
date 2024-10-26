@@ -32,15 +32,39 @@ async function run() {
             const result = await userCollection.insertOne(users);
             res.send(result);
         })
-        
-        app.get('/users', async (req, res) =>{ 
+
+        app.get('/users', async (req, res) => {
             const cursor = await userCollection.find().toArray();
             res.send(cursor);
         })
 
+        app.get('/users/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const result = await userCollection.findOne(query);
+            res.send(result);
+        })
+
+        app.patch('/users/:id', async (req, res) => {
+            const id = req.params.id;
+            const users = req.body;
+            console.log(users);
+            const filter = { _id: new ObjectId(id) };
+            const updateUsers = {
+                $set: {
+                    name: users.name,
+                    email: users.email,
+                    gender: users.gender,
+                    status: users.status
+                },
+            };
+            const result = await userCollection.updateOne(filter, updateUsers);
+            res.send(result);
+        })
+
         app.delete('/users/:id', async (req, res) => {
             const id = req.params.id;
-            const query = { _id: new ObjectId(id)};
+            const query = { _id: new ObjectId(id) };
             const result = await userCollection.deleteOne(query);
             res.send(result);
         })
